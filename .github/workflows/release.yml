@@ -26,6 +26,7 @@ jobs:
         with:
           command: build
           args: --release --out dist
+          working-directory: .
 
       - name: Upload wheels
         uses: actions/upload-artifact@v4
