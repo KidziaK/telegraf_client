@@ -44,13 +44,15 @@ jobs:
           python-version: '3.12'
 
       # Clean dist folder (OS-aware)
-      - name: Clean dist folder
-        run: |
-          if [ "$RUNNER_OS" = "Linux" ] || [ "$RUNNER_OS" = "macOS" ]; then
-            rm -rf dist/*
-          else
-            powershell -Command "Remove-Item -Recurse -Force dist\*"
-          fi
+      - name: Clean dist folder (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: rm -rf dist/*
+        shell: bash
+
+      - name: Clean dist folder (Windows)
+        if: runner.os == 'Windows'
+        run: Remove-Item -Recurse -Force dist\*
+        shell: powershell
 
       # Install ARM64 toolchain for Linux
       - name: Install ARM64 toolchain (Linux only)
@@ -65,7 +67,7 @@ jobs:
           linker = "aarch64-linux-gnu-gcc"
           EOF
 
-      # QEMU for cross-compiling Linux ARM
+      # QEMU for cross-compiling ARM64 Linux
       - name: Set up QEMU
         if: runner.os == 'Linux' && contains(matrix.target, 'aarch64')
         uses: docker/setup-qemu-action@v3
