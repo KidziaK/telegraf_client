@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "telegraf-client"
-version = "0.1.30"
+version = "0.1.31"
 description = "Python bindings for the telegraf Rust client"
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
@@ -39,3 +39,6 @@ Repository = "https://github.com/KidziaK/telegraf_client"
 
 [tool.maturin]
 module-name = "telegraf_client"
+
+[tool.setuptools]
+license-files = []
