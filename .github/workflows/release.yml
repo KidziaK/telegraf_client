@@ -12,7 +12,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Linux (manylinux)
+          # Linux
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
             manylinux: manylinux_2_36
@@ -38,25 +38,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
+      # QEMU is only needed for cross-compiling Linux aarch64
       - name: Set up QEMU (Linux ARM only)
         if: runner.os == 'Linux' && contains(matrix.target, 'aarch64')
         uses: docker/setup-qemu-action@v3
 
-      - name: Build wheels
+      - name: Build wheel
         uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.target }}
-          args: --release --out dist
           manylinux: ${{ matrix.manylinux }}
-          # 👇 tell maturin which interpreter to use
-          python-interpreter: python3
+          args: --release --out dist -i python3.12
 
-      - name: Upload wheels
+      - name: Upload wheel
         uses: actions/upload-artifact@v4
         with:
           name: wheels-${{ matrix.target }}
@@ -68,7 +67,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download all built wheels
+      - name: Download all wheels
         uses: actions/download-artifact@v4
         with:
           path: dist
