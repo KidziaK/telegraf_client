@@ -38,9 +38,7 @@ jobs:
         with:
           python-version: '3.12'
 
-      # Clean dist folder (OS-aware)
-      - name: Clean dist folder (Linux/macOS)
-        if: runner.os != 'Windows'
+      - name: Clean dist folder
         run: rm -rf dist/*
         shell: bash
 
@@ -66,13 +64,13 @@ jobs:
       - name: Install maturin
         run: pip install --upgrade maturin
 
-      # Build wheel
-      - name: Build wheel
-        uses: PyO3/maturin-action@v1
-        with:
-          target: ${{ matrix.target }}
-          manylinux: ${{ matrix.manylinux }}
-          args: --release --out dist -i python3.12
+        # Build wheel
+        - name: Build wheel
+          run: |
+            maturin build --release --target ${{ matrix.target }} --out dist --interpreter python3.12 --manylinux ${{ matrix.manylinux }} --no-sdist
+          env:
+            MATURIN_SKIP_LICENSE_FILE: "1"
+            MATURIN_PEP517_ARGS: "--no-build-isolation"
 
       # Upload wheel artifact
       - name: Upload wheel
