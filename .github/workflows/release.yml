@@ -23,8 +23,14 @@ jobs:
     - name: Install maturin
       run: pip install maturin
     
-    - name: Build and publish
+    - name: Build wheel
+      run: maturin build --release
+    
+    - name: Install twine
+      run: pip install twine
+    
+    - name: Publish to PyPI
       env:
         TWINE_USERNAME: __token__
         TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-      run: maturin publish
+      run: twine upload target/wheels/*.whl
