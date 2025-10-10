@@ -20,6 +20,7 @@ classifiers = [
 ]
 dynamic = ["version"]
 dependencies = [
+    "maturin>=1.9.6",
     "requests>=2.32.4",
 ]
 
