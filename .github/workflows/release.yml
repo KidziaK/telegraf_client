@@ -53,6 +53,8 @@ jobs:
           target: ${{ matrix.target }}
           args: --release --out dist
           manylinux: ${{ matrix.manylinux }}
+          # 👇 tell maturin which interpreter to use
+          python-interpreter: python3
 
       - name: Upload wheels
         uses: actions/upload-artifact@v4
@@ -83,4 +85,4 @@ jobs:
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        run: twine upl
+        run: twine upload --skip-existing dist/*.whl
