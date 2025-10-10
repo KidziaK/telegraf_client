@@ -43,8 +43,12 @@ jobs:
         with:
           python-version: '3.12'
 
-      # Install cross toolchain if building for Linux aarch64
-      - name: Install cross-compilation tools
+      # Clean dist folder
+      - name: Clean dist folder
+        run: rm -rf dist/*
+
+      # Install cross-compilation tools for Linux ARM
+      - name: Install ARM64 toolchain (Linux only)
         if: runner.os == 'Linux' && contains(matrix.target, 'aarch64')
         run: |
           sudo apt-get update
@@ -56,18 +60,27 @@ jobs:
           linker = "aarch64-linux-gnu-gcc"
           EOF
 
-      # QEMU is only needed for cross-compiling Linux aarch64
-      - name: Set up QEMU (Linux ARM only)
+      # QEMU for cross-compiling ARM64 Linux
+      - name: Set up QEMU
         if: runner.os == 'Linux' && contains(matrix.target, 'aarch64')
         uses: docker/setup-qemu-action@v3
 
+      # Install maturin
+      - name: Install maturin
+        run: pip install --upgrade maturin
+
+      # Build wheel
       - name: Build wheel
         uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.target }}
           manylinux: ${{ matrix.manylinux }}
           args: --release --out dist -i python3.12
+        env:
+          # Prevent maturin from including license-file metadata
+          MATURIN_SKIP_LICENSE_FILE: "1"
 
+      # Upload wheel artifact
       - name: Upload wheel
         uses: actions/upload-artifact@v4
         with:
@@ -91,7 +104,7 @@ jobs:
         run: ls -l dist
 
       - name: Install Twine
-        run: pip install twine
+        run: pip install --upgrade twine
 
       - name: Publish to PyPI
         env:
