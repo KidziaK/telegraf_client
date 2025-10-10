@@ -37,7 +37,7 @@ jobs:
       run: uv run maturin build --release
     
     - name: Install the built package
-      run: uv run pip install target/wheels/*.whl
+      run: uv run pip install target/wheels/telegraf_client-0.1.0-cp312-cp312-linux_x86_64.whl
     
     - name: Run tests
       run: uv run pytest

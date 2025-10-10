@@ -31,5 +31,6 @@ jobs:
     
     - name: Publish to PyPI
       env:
-        MATURIN_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
       run: uv run maturin publish
