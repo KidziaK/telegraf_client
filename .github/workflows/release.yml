@@ -10,23 +10,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        include:
-          - os: ubuntu-latest
-            python-version: "3.12"
-            target: "x86_64-unknown-linux-gnu"
-          - os: windows-latest
-            python-version: "3.12"
-            target: "x86_64-pc-windows-msvc"
-          - os: macos-latest
-            python-version: "3.12"
-            target: "x86_64-apple-darwin"
-          - os: macos-latest
-            python-version: "3.12"
-            target: "aarch64-apple-darwin"
-          - os: ubuntu-latest
-            python-version: "3.12"
-            target: "aarch64-unknown-linux-gnu"
-            manylinux: "manylinux_2_36_aarch64"
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.12"]
     
     steps:
     - uses: actions/checkout@v4
@@ -39,24 +24,11 @@ jobs:
     - name: Install Rust
       run: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
     
-    - name: Add Rust targets
-      run: |
-        rustup target add ${{ matrix.target }}
-        if [ "${{ matrix.target }}" = "aarch64-unknown-linux-gnu" ]; then
-          rustup target add aarch64-unknown-linux-musl
-        fi
-    
     - name: Install maturin
       run: pip install maturin
     
     - name: Build wheel
-      run: |
-        if [ "${{ matrix.manylinux }}" = "manylinux_2_36_aarch64" ]; then
-          # For ARM64 Linux, use Docker-based build
-          docker run --rm -v $(pwd):/io -w /io ghcr.io/pyo3/maturin:latest build --release --target aarch64-unknown-linux-gnu --manylinux manylinux_2_36_aarch64
-        else
-          maturin build --release --target ${{ matrix.target }}
-        fi
+      run: maturin build --release --interpreter python3.12
     
     - name: Install twine
       run: pip install twine
