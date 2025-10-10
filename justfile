@@ -1,0 +1,2 @@
+bump:
+    ./bump.sh
