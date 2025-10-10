@@ -1,0 +1,12 @@
+[package]
+name = "telegraf-client"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "telegraf_client"
+crate-type = ["cdylib"]
+
+[dependencies]
+telegraf = "0.6.0"
+pyo3 = { version = "0.21", features = ["extension-module"] }
