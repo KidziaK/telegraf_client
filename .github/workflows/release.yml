@@ -43,15 +43,17 @@ jobs:
         with:
           python-version: '3.12'
 
-      # Clean dist folder (OS-aware)
+      # Clean dist folder (Linux/macOS)
       - name: Clean dist folder (Linux/macOS)
         if: runner.os != 'Windows'
         run: rm -rf dist/*
         shell: bash
 
+      # Clean dist folder (Windows)
       - name: Clean dist folder (Windows)
         if: runner.os == 'Windows'
-        run: Remove-Item -Recurse -Force dist\*
+        run: |
+          if (Test-Path dist) { Remove-Item -Recurse -Force dist\* }
         shell: powershell
 
       # Install ARM64 toolchain for Linux
