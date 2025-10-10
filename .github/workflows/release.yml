@@ -28,11 +28,6 @@ jobs:
             target: aarch64-apple-darwin
             manylinux: ""
 
-          # Windows
-          - os: windows-latest
-            target: x86_64-pc-windows-msvc
-            manylinux: ""
-
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -48,11 +43,6 @@ jobs:
         if: runner.os != 'Windows'
         run: rm -rf dist/*
         shell: bash
-
-      - name: Clean dist folder (Windows)
-        if: runner.os == 'Windows'
-        run: Remove-Item -Recurse -Force dist\*
-        shell: powershell
 
       # Install ARM64 toolchain for Linux
       - name: Install ARM64 toolchain (Linux only)
@@ -78,13 +68,11 @@ jobs:
 
       # Build wheel
       - name: Build wheel
-        uses: PyO3/maturin-action@v2
+        uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.target }}
           manylinux: ${{ matrix.manylinux }}
           args: --release --out dist -i python3.12
-        env:
-          MATURIN_SKIP_LICENSE_FILE: "1"
 
       # Upload wheel artifact
       - name: Upload wheel
