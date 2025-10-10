@@ -4,21 +4,25 @@ build-backend = "maturin"
 
 [project]
 name = "telegraf-client"
+version = "0.1.0"
 description = "Python bindings for the telegraf Rust client"
-requires-python = ">=3.8"
+readme = "README.md"
+requires-python = ">=3.12"
+authors = [
+    {name = "telegraf-client contributors"}
+]
+license = {text = "MIT"}
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Rust",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Monitoring",
 ]
-dynamic = ["version"]
+keywords = ["telegraf", "metrics", "monitoring", "rust", "python"]
 dependencies = [
     "maturin>=1.9.6",
     "requests>=2.32.4",
