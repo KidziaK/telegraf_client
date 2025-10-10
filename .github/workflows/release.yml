@@ -11,15 +11,20 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        target:
-          # Linux
-          - x86_64-unknown-linux-gnu
-          - aarch64-unknown-linux-gnu
-          # macOS
-          - x86_64-apple-darwin
-          - aarch64-apple-darwin
-          # Windows
-          - x86_64-pc-windows-msvc
+        include:
+          # Linux builds with manylinux
+          - target: x86_64-unknown-linux-gnu
+            manylinux_version: manylinux_2_36
+          - target: aarch64-unknown-linux-gnu
+            manylinux_version: manylinux_2_36
+          # macOS builds (no manylinux)
+          - target: x86_64-apple-darwin
+            manylinux_version: ""
+          - target: aarch64-apple-darwin
+            manylinux_version: ""
+          # Windows build (no manylinux)
+          - target: x86_64-pc-windows-msvc
+            manylinux_version: ""
 
     steps:
       - uses: actions/checkout@v4
@@ -32,8 +37,7 @@ jobs:
         with:
           target: ${{ matrix.target }}
           args: --release --out dist
-          # Set the specific manylinux version here
-          manylinux: manylinux_2_36
+          manylinux: ${{ matrix.manylinux_version }}
           
       - name: Upload wheels
         uses: actions/upload-artifact@v4
