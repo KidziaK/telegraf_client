@@ -27,6 +27,12 @@ jobs:
     - name: Install dependencies
       run: uv sync
     
+    - name: Install maturin
+      run: uv run pip install maturin
+    
+    - name: Build wheel
+      run: uv run maturin build --release
+    
     - name: Run tests
       run: uv run pytest
 
