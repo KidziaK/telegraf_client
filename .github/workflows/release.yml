@@ -3,63 +3,28 @@ name: Release
 on:
   push:
     tags:
-      - 'v[0-9]+.*'
+      - 'v*'
 
 jobs:
-  build:
-    name: Build wheels on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.12"
-      
-      - name: Install Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          components: rustfmt, clippy
-      
-      - name: Install maturin
-        run: pip install maturin
-      
-      - name: Build binary wheels
-        run: maturin build --release --out dist
-
-      - name: Upload wheels
-        uses: actions/upload-artifact@v4
-        with:
-          name: wheels-${{ matrix.os }}
-          path: dist
-
-  publish:
-    name: Publish to PyPI
-    needs: [build]
+  release:
     runs-on: ubuntu-latest
     
-    environment:
-      name: pypi
-
-    permissions:
-      id-token: write
-
     steps:
-      - name: Download all wheels
-        uses: actions/download-artifact@v4
-        with:
-          path: dist
-          pattern: wheels-*
-          merge-multiple: true
-
-      - name: Publish to PyPI
-        uses: PyO3/maturin-action@v1
-        with:
-          command: publish
-          args: --non-interactive dist/*
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.12"
+    
+    - name: Install Rust
+      run: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    
+    - name: Install maturin
+      run: pip install maturin
+    
+    - name: Build and publish
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+      run: maturin publish
