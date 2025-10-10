@@ -52,7 +52,8 @@ jobs:
     - name: Build wheel
       run: |
         if [ "${{ matrix.manylinux }}" = "manylinux_2_36_aarch64" ]; then
-          maturin build --release --target aarch64-unknown-linux-musl --manylinux manylinux_2_36_aarch64
+          # For ARM64 Linux, use Docker-based build
+          docker run --rm -v $(pwd):/io -w /io ghcr.io/pyo3/maturin:latest build --release --target aarch64-unknown-linux-gnu --manylinux manylinux_2_36_aarch64
         else
           maturin build --release --target ${{ matrix.target }}
         fi
