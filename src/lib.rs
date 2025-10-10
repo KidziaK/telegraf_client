@@ -46,7 +46,15 @@ impl PyPoint {
             rust_fields.push((key_str, field_value));
         }
 
-        let point = telegraf::Point::new(measurement, rust_tags, rust_fields, timestamp);
+        // Use current timestamp if None is provided
+        let final_timestamp = timestamp.unwrap_or_else(|| {
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos() as u64
+        });
+        
+        let point = telegraf::Point::new(measurement, rust_tags, rust_fields, Some(final_timestamp));
         Ok(PyPoint { inner: point })
     }
 }

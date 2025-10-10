@@ -19,13 +19,16 @@ classifiers = [
     "Programming Language :: Rust",
 ]
 dynamic = ["version"]
+dependencies = [
+    "requests>=2.32.4",
+]
 
 [project.optional-dependencies]
 dev = ["pytest"]
 
 [project.urls]
-Homepage = "https://github.com/mikolajkida/telegraf_client"
-Repository = "https://github.com/mikolajkida/telegraf_client"
+Homepage = "https://github.com/KidziaK/telegraf_client"
+Repository = "https://github.com/KidziaK/telegraf_client"
 
 [tool.maturin]
 module-name = "telegraf_client"
