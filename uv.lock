@@ -399,7 +399,7 @@ wheels = [
 
 [[package]]
 name = "telegraf-client"
-version = "0.1.32"
+version = "0.1.33"
 source = { editable = "." }
 dependencies = [
     { name = "maturin" },

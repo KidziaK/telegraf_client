@@ -38,10 +38,6 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Clean dist folder
-        run: rm -rf dist/*
-        shell: bash
-
       # Install ARM64 toolchain for Linux
       - name: Install ARM64 toolchain (Linux only)
         if: runner.os == 'Linux' && contains(matrix.target, 'aarch64')
@@ -96,7 +92,7 @@ jobs:
         run: ls -l dist
 
       - name: Install Twine
-        run: pip install --upgrade twine
+        run: pip install --upgrade twine==6.0.1
 
       - name: Publish to PyPI
         env:
