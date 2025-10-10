@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
+VERSION_TYPE=${1:-patch}
+
 LATEST_TAG=$(git describe --tags --abbrev=0)
 echo "Latest tag: $LATEST_TAG"
 
@@ -8,8 +10,25 @@ VERSION=${LATEST_TAG#v}
 
 IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
 
-NEW_PATCH=$((PATCH + 1))
-NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH"
+case $VERSION_TYPE in
+  major)
+    NEW_MAJOR=$((MAJOR + 1))
+    NEW_VERSION="$NEW_MAJOR.0.0"
+    ;;
+  minor)
+    NEW_MINOR=$((MINOR + 1))
+    NEW_VERSION="$MAJOR.$NEW_MINOR.0"
+    ;;
+  patch)
+    NEW_PATCH=$((PATCH + 1))
+    NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH"
+    ;;
+  *)
+    echo "Invalid version type: $VERSION_TYPE. Use 'major', 'minor', or 'patch'"
+    exit 1
+    ;;
+esac
+
 NEW_TAG="v$NEW_VERSION"
 
 echo "Updating version to $NEW_VERSION in pyproject.toml"
