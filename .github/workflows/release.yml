@@ -27,14 +27,7 @@ jobs:
     - name: Install maturin
       run: pip install maturin
     
-    - name: Build wheel (macOS)
-      if: matrix.os == 'macos-latest'
-      run: maturin build --release --interpreter python3.12
-      env:
-        MACOSX_DEPLOYMENT_TARGET: 13
-    
-    - name: Build wheel (Linux/Windows)
-      if: matrix.os != 'macos-latest'
+    - name: Build wheel
       run: maturin build --release --interpreter python3.12
     
     - name: Install twine
