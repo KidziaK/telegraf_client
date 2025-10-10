@@ -25,6 +25,8 @@ jobs:
       run: uv python install ${{ matrix.python-version }}
     
     - name: Install dependencies
+      env:
+        PYO3_USE_ABI3_FORWARD_COMPATIBILITY: 1
       run: uv sync
     
     - name: Install maturin
@@ -34,6 +36,8 @@ jobs:
       run: uv run pip install pytest
     
     - name: Build wheel
+      env:
+        PYO3_USE_ABI3_FORWARD_COMPATIBILITY: 1
       run: uv run maturin build --release
     
     - name: Install the built package
@@ -58,12 +62,16 @@ jobs:
       run: uv python install 3.12
     
     - name: Install dependencies
+      env:
+        PYO3_USE_ABI3_FORWARD_COMPATIBILITY: 1
       run: uv sync
     
     - name: Install maturin
       run: uv run pip install maturin
     
     - name: Build wheel
+      env:
+        PYO3_USE_ABI3_FORWARD_COMPATIBILITY: 1
       run: uv run maturin build --release
     
     - name: Upload artifacts
