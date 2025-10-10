@@ -64,13 +64,13 @@ jobs:
       - name: Install maturin
         run: pip install --upgrade maturin
 
-        # Build wheel
-        - name: Build wheel
-          run: |
-            maturin build --release --target ${{ matrix.target }} --out dist --interpreter python3.12 --manylinux ${{ matrix.manylinux }} --no-sdist
-          env:
-            MATURIN_SKIP_LICENSE_FILE: "1"
-            MATURIN_PEP517_ARGS: "--no-build-isolation"
+      # Build wheel
+      - name: Build wheel
+        run: |
+          maturin build --release --target ${{ matrix.target }} --out dist --interpreter python3.12 --manylinux ${{ matrix.manylinux }} --no-sdist
+        env:
+          MATURIN_SKIP_LICENSE_FILE: "1"
+          MATURIN_PEP517_ARGS: "--no-build-isolation"
 
       # Upload wheel artifact
       - name: Upload wheel
