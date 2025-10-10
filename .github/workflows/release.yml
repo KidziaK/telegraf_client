@@ -24,7 +24,7 @@ jobs:
       run: pip install maturin
     
     - name: Build wheel
-      run: maturin build --release
+      run: maturin build --release --interpreter python3.12
     
     - name: Install twine
       run: pip install twine
