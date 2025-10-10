@@ -26,6 +26,7 @@ jobs:
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
+          interpreter: '3.12'
           target: ${{ matrix.target }}
           args: --release --out dist
           manylinux: auto
