@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "telegraf-client"
-version = "0.1.0"
+version = "0.1.1"
 description = "Python bindings for the telegraf Rust client"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -26,6 +26,7 @@ keywords = ["telegraf", "metrics", "monitoring", "rust", "python"]
 dependencies = [
     "maturin>=1.9.6",
     "requests>=2.32.4",
+    "twine>=6.2.0",
 ]
 
 [project.optional-dependencies]
