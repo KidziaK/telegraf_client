@@ -43,17 +43,16 @@ jobs:
         with:
           python-version: '3.12'
 
-      # Clean dist folder (Linux/macOS)
+      # Clean dist folder
       - name: Clean dist folder (Linux/macOS)
         if: runner.os != 'Windows'
-        run: rm -rf dist/*
+        run: rm -rf dist
         shell: bash
 
-      # Clean dist folder (Windows)
       - name: Clean dist folder (Windows)
         if: runner.os == 'Windows'
         run: |
-          if (Test-Path dist) { Remove-Item -Recurse -Force dist\* }
+          if (Test-Path dist) { Remove-Item -Recurse -Force dist }
         shell: powershell
 
       # Install ARM64 toolchain for Linux
@@ -74,9 +73,9 @@ jobs:
         if: runner.os == 'Linux' && contains(matrix.target, 'aarch64')
         uses: docker/setup-qemu-action@v3
 
-      # Install maturin
+      # Ensure latest maturin
       - name: Install maturin
-        run: pip install --upgrade maturin
+        run: pip install --upgrade maturin>=1.11
 
       # Build wheel
       - name: Build wheel
