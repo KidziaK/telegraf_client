@@ -30,4 +30,6 @@ jobs:
       run: uv run maturin build --release
     
     - name: Publish to PyPI
-      run: uv run maturin publish --token ${{ secrets.PYPI_API_TOKEN }}
+      env:
+        MATURIN_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+      run: uv run maturin publish
