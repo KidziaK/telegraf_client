@@ -21,12 +21,17 @@ jobs:
         with:
           python-version: "3.12"
       
-      - name: Build binary wheels
-        uses: PyO3/maturin-action@v1
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
         with:
-          command: build
-          args: --release --out dist
-          working-directory: .
+          toolchain: stable
+          components: rustfmt, clippy
+      
+      - name: Install maturin
+        run: pip install maturin
+      
+      - name: Build binary wheels
+        run: maturin build --release --out dist
 
       - name: Upload wheels
         uses: actions/upload-artifact@v4
