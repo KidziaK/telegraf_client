@@ -1,7 +1,6 @@
 use pyo3::create_exception;
 use pyo3::prelude::*;
 use pyo3::types::{PyDict, PyModule};
-use std::collections::HashMap;
 use telegraf::{self, IntoFieldData};
 
 create_exception!(
@@ -22,31 +21,50 @@ impl PyPoint {
     #[pyo3(signature = (measurement, tags, fields, timestamp=None))]
     fn new(
         measurement: String,
-        tags: Option<HashMap<String, String>>,
-        fields: &Bound<'_, PyDict>,
+        tags: Option<&Bound<'_, PyDict>>,
+        fields: Option<&Bound<'_, PyDict>>,
         timestamp: Option<u64>,
     ) -> PyResult<Self> {
-        let rust_tags: Vec<(String, String)> = tags.unwrap_or_default().into_iter().collect();
+        let rust_tags: Vec<(String, String)> = if let Some(tags_dict) = tags {
+            let mut tag_vec = Vec::new();
+            for (key, value) in tags_dict.iter() {
+                let key_str = key.extract::<String>()?;
+                let value_str = if value.is_none() {
+                    String::new()
+                } else {
+                    value.extract::<String>().unwrap_or_default()
+                };
+                tag_vec.push((key_str, value_str));
+            }
+            tag_vec
+        } else {
+            Vec::new()
+        };
+        
         let mut rust_fields: Vec<(String, Box<dyn IntoFieldData>)> = Vec::new();
 
-        for (key, value) in fields.iter() {
-            let key_str = key.extract::<String>()?;
-            let field_value: Box<dyn IntoFieldData> = if let Ok(val) = value.extract::<bool>() {
-                Box::new(val)
-            } else if let Ok(val) = value.extract::<i64>() {
-                Box::new(val)
-            } else if let Ok(val) = value.extract::<f64>() {
-                Box::new(val)
-            } else if let Ok(val) = value.extract::<String>() {
-                Box::new(val)
-            } else {
-                let msg = format!("Unsupported field type for key '{}'", key_str);
-                return Err(TelegrafBindingError::new_err(msg));
-            };
-            rust_fields.push((key_str, field_value));
+        if let Some(fields_dict) = fields {
+            for (key, value) in fields_dict.iter() {
+                let key_str = key.extract::<String>()?;
+                
+                let field_value: Box<dyn IntoFieldData> = if value.is_none() {
+                    Box::new(String::new())
+                } else if let Ok(val) = value.extract::<bool>() {
+                    Box::new(val)
+                } else if let Ok(val) = value.extract::<i64>() {
+                    Box::new(val)
+                } else if let Ok(val) = value.extract::<f64>() {
+                    Box::new(val)
+                } else if let Ok(val) = value.extract::<String>() {
+                    Box::new(val)
+                } else {
+                    let msg = format!("Unsupported field type for key '{}'", key_str);
+                    return Err(TelegrafBindingError::new_err(msg));
+                };
+                rust_fields.push((key_str, field_value));
+            }
         }
 
-        // Use current timestamp if None is provided
         let final_timestamp = timestamp.unwrap_or_else(|| {
             std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)
