@@ -22,10 +22,3 @@ point = telegraf_client.Point(
 client.write_point(point)
 client.close()
 ```
-
-## Development
-
-```bash
-uv sync
-uv run pytest
-```

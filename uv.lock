@@ -399,27 +399,25 @@ wheels = [
 
 [[package]]
 name = "telegraf-client"
-version = "0.1.34"
+version = "0.1.35"
 source = { editable = "." }
-dependencies = [
-    { name = "maturin" },
-    { name = "requests" },
-    { name = "twine" },
-]
 
 [package.optional-dependencies]
+build = [
+    { name = "maturin" },
+    { name = "twine" },
+]
 dev = [
     { name = "pytest" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "maturin", specifier = ">=1.9.6" },
+    { name = "maturin", marker = "extra == 'build'", specifier = ">=1.9.6" },
     { name = "pytest", marker = "extra == 'dev'" },
-    { name = "requests", specifier = ">=2.32.4" },
-    { name = "twine", specifier = "==6.0.1" },
+    { name = "twine", marker = "extra == 'build'", specifier = "==6.0.1" },
 ]
-provides-extras = ["dev"]
+provides-extras = ["dev", "build"]
 
 [[package]]
 name = "twine"
