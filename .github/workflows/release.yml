@@ -72,10 +72,18 @@ jobs:
           args: --release --out dist -i python3.12
 
       # Upload wheel artifact
+      - name: Set artifact name
+        id: artifact-name
+        run: |
+          if [ -n "${{ matrix.manylinux }}" ]; then
+            echo "name=wheels-${{ matrix.target }}-${{ matrix.manylinux }}" >> $GITHUB_OUTPUT
+          else
+            echo "name=wheels-${{ matrix.target }}" >> $GITHUB_OUTPUT
+          fi
       - name: Upload wheel
         uses: actions/upload-artifact@v4
         with:
-          name: wheels-${{ matrix.target }}
+          name: ${{ steps.artifact-name.outputs.name }}
           path: dist
 
   publish:
