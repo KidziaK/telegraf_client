@@ -9,14 +9,13 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    
     strategy:
       matrix:
         python-version: ["3.12"]
 
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Start Telegraf
       run: |
         docker run -d \
@@ -36,25 +35,33 @@ jobs:
     - name: Install dependencies
       env:
         PYO3_USE_ABI3_FORWARD_COMPATIBILITY: 1
-      run: uv sync --extra build --extra dev
+      run: uv sync
     
-    - name: Build and Install extension
+    - name: Install maturin
+      run: uv run pip install maturin
+    
+    - name: Install pytest
+      run: uv run pip install pytest
+    
+    - name: Build wheel
       env:
         PYO3_USE_ABI3_FORWARD_COMPATIBILITY: 1
+      run: uv run maturin build --release
+    
+    - name: List available wheels
+      run: ls -la target/wheels/
+    
+    - name: Install the built package
       run: |
-        uv run maturin build --release
-        uv pip install target/wheels/*.whl
+        PYTHON_VERSION=$(echo "${{ matrix.python-version }}" | tr -d '.')
+        WHEEL_FILE=$(ls target/wheels/telegraf_client-*cp${PYTHON_VERSION}*.whl | head -1)
+        echo "Installing wheel: $WHEEL_FILE"
+        uv run pip install "$WHEEL_FILE"
     
     - name: Run tests
       run: |
         sleep 5
         uv run pytest
-      env:
-        TELEGRAF_URL: udp://localhost:8089
-
-    - name: Check Telegraf Logs (if failed)
-      if: failure()
-      run: docker logs telegraf
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
