@@ -107,8 +107,7 @@ impl PyClient {
             let py_point = point.downcast::<PyPoint>()
                 .map_err(|_| TelegrafBindingError::new_err("All items in the list must be Point objects"))?;
             let py_point_ref: PyRef<'_, PyPoint> = py_point.borrow();
-            self.inner
-                .write_point(&py_point_ref.inner)
+            self.write_point(&py_point_ref)
                 .map_err(|e| TelegrafBindingError::new_err(e.to_string()))?;
         }
         Ok(())
