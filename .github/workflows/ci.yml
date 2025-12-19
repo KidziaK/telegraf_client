@@ -33,22 +33,17 @@ jobs:
     - name: Set up Python ${{ matrix.python-version }}
       run: uv python install ${{ matrix.python-version }}
     
-    - name: Install dependencies
-      env:
-        PYO3_USE_ABI3_FORWARD_COMPATIBILITY: 1
-      run: uv sync
-    
-    - name: Install maturin
-      run: uv run pip install maturin
+    - name: Install Build Tools and Dependencies
+      run: |
+        uv pip install maturin pytest
+        uv sync
     
     - name: Build and Install extension
       env:
         PYO3_USE_ABI3_FORWARD_COMPATIBILITY: 1
       run: |
         uv run maturin build --release
-        PYTHON_VERSION=$(echo "${{ matrix.python-version }}" | tr -d '.')
-        WHEEL_FILE=$(ls target/wheels/telegraf_client-*cp${PYTHON_VERSION}*.whl | head -1)
-        uv run pip install "$WHEEL_FILE"
+        uv pip install target/wheels/*.whl
     
     - name: Run tests
       run: uv run pytest
