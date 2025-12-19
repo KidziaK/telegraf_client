@@ -33,11 +33,10 @@ jobs:
     - name: Set up Python ${{ matrix.python-version }}
       run: uv python install ${{ matrix.python-version }}
     
-    - name: Setup Environment and Install Dependencies
-      run: |
-        uv venv
-        uv pip install maturin pytest
-        uv sync
+    - name: Install dependencies
+      env:
+        PYO3_USE_ABI3_FORWARD_COMPATIBILITY: 1
+      run: uv sync --extra build --extra dev
     
     - name: Build and Install extension
       env:
