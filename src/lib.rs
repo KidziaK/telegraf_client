@@ -1,6 +1,6 @@
 use pyo3::create_exception;
 use pyo3::prelude::*;
-use pyo3::types::{PyDict, PyModule};
+use pyo3::types::{PyDict, PyList, PyModule};
 use telegraf::{self, IntoFieldData};
 
 create_exception!(
@@ -96,6 +96,21 @@ impl PyClient {
         self.inner
             .write_point(&py_point_ref.inner)
             .map_err(|e| TelegrafBindingError::new_err(e.to_string()))?;
+        Ok(())
+    }
+
+    fn write_points(&mut self, points: &Bound<'_, PyAny>) -> PyResult<()> {
+        let points_list = points.downcast::<PyList>()
+            .map_err(|_| TelegrafBindingError::new_err("Expected a list of Point objects"))?;
+        
+        for point in points_list.iter() {
+            let py_point = point.downcast::<PyPoint>()
+                .map_err(|_| TelegrafBindingError::new_err("All items in the list must be Point objects"))?;
+            let py_point_ref: PyRef<'_, PyPoint> = py_point.borrow();
+            self.inner
+                .write_point(&py_point_ref.inner)
+                .map_err(|e| TelegrafBindingError::new_err(e.to_string()))?;
+        }
         Ok(())
     }
 

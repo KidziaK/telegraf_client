@@ -62,14 +62,23 @@ def test_error_handling_invalid_connection():
 def test_client_methods():
     client = telegraf_client.Client("udp://localhost:8089")
     
-    fields = {"test": 1.0}
-    point = telegraf_client.Point(
+    f1 = {"test": 1.0}
+    f2 = {"test": 2.0}
+
+    p1 = telegraf_client.Point(
         measurement="test",
         tags=None,
-        fields=fields
+        fields=f1
+    )
+
+    p2 = telegraf_client.Point(
+        measurement="test",
+        tags=None,
+        fields=f2
     )
     
-    client.write_point(point)
+    client.write_point(p1)
+    client.write_points([p1, p2])
     client.close()
 
 def test_point_field_types():
