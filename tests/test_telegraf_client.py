@@ -74,7 +74,7 @@ def test_client_methods():
     client.close()
 
 def test_write_points():
-    client = telegraf_client.Client("udp://localhost:8089")
+    client = telegraf_client.Client("udp://localhost:8069")
     f1 = {"test": 1.0}
     f2 = {"test": 2.0}
     p1 = telegraf_client.Point(
