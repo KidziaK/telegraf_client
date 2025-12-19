@@ -87,7 +87,7 @@ def test_write_points():
         tags=None,
         fields=f2
     )
-    client.write_points([p1])
+    client.write_points([p1, p2])
     client.close()
 
 def test_point_field_types():
