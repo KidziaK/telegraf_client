@@ -53,8 +53,11 @@ jobs:
     
     - name: Install the built package
       run: |
-        PYTHON_VERSION=$(echo "${{ matrix.python-version }}" | tr -d '.')
-        WHEEL_FILE=$(ls target/wheels/telegraf_client-*cp${PYTHON_VERSION}*.whl | head -1)
+        WHEEL_FILE=$(ls -1t target/wheels/telegraf_client-*.whl | head -1)
+        if [ -z "$WHEEL_FILE" ]; then
+          echo "No built wheel found in target/wheels"
+          exit 1
+        fi
         echo "Installing wheel: $WHEEL_FILE"
         uv run pip install "$WHEEL_FILE"
     
