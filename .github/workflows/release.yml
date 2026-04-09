@@ -7,12 +7,12 @@ on:
 
 jobs:
   build_wheels:
-    name: Build wheels for ${{ matrix.target }} (py${{ matrix.python-version }})
+    name: Build wheels for ${{ matrix.build.target }} (py${{ matrix.python-version }})
     strategy:
       fail-fast: false
       matrix:
         python-version: ["3.12", "3.13"]
-        include:
+        build:
           # Linux
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
@@ -32,7 +32,7 @@ jobs:
             target: aarch64-apple-darwin
             manylinux: ""
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.build.os }}
 
     steps:
       - uses: actions/checkout@v4
@@ -44,7 +44,7 @@ jobs:
 
       # Install ARM64 toolchain for Linux
       - name: Install ARM64 toolchain (Linux only)
-        if: runner.os == 'Linux' && contains(matrix.target, 'aarch64')
+        if: runner.os == 'Linux' && contains(matrix.build.target, 'aarch64')
         run: |
           sudo apt-get update
           sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
@@ -57,7 +57,7 @@ jobs:
 
       # QEMU for cross-compiling ARM64 Linux
       - name: Set up QEMU
-        if: runner.os == 'Linux' && contains(matrix.target, 'aarch64')
+        if: runner.os == 'Linux' && contains(matrix.build.target, 'aarch64')
         uses: docker/setup-qemu-action@v3
 
       # Install maturin
@@ -70,18 +70,18 @@ jobs:
           PYO3_USE_ABI3_FORWARD_COMPATIBILITY: 1
         uses: PyO3/maturin-action@v1
         with:
-          target: ${{ matrix.target }}
-          manylinux: ${{ matrix.manylinux }}
+          target: ${{ matrix.build.target }}
+          manylinux: ${{ matrix.build.manylinux }}
           args: --release --out dist -i python${{ matrix.python-version }}
 
       # Upload wheel artifact
       - name: Set artifact name
         id: artifact-name
         run: |
-          if [ -n "${{ matrix.manylinux }}" ]; then
-            echo "name=wheels-py${{ matrix.python-version }}-${{ matrix.target }}-${{ matrix.manylinux }}" >> $GITHUB_OUTPUT
+          if [ -n "${{ matrix.build.manylinux }}" ]; then
+            echo "name=wheels-py${{ matrix.python-version }}-${{ matrix.build.target }}-${{ matrix.build.manylinux }}" >> $GITHUB_OUTPUT
           else
-            echo "name=wheels-py${{ matrix.python-version }}-${{ matrix.target }}" >> $GITHUB_OUTPUT
+            echo "name=wheels-py${{ matrix.python-version }}-${{ matrix.build.target }}" >> $GITHUB_OUTPUT
           fi
       - name: Upload wheel
         uses: actions/upload-artifact@v4
