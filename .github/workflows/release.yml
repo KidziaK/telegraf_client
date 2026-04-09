@@ -7,10 +7,11 @@ on:
 
 jobs:
   build_wheels:
-    name: Build wheels for ${{ matrix.target }}
+    name: Build wheels for ${{ matrix.target }} (py${{ matrix.python-version }})
     strategy:
       fail-fast: false
       matrix:
+        python-version: ["3.12", "3.13"]
         include:
           # Linux
           - os: ubuntu-latest
@@ -36,10 +37,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python 3.12
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: ${{ matrix.python-version }}
 
       # Install ARM64 toolchain for Linux
       - name: Install ARM64 toolchain (Linux only)
@@ -69,16 +70,16 @@ jobs:
         with:
           target: ${{ matrix.target }}
           manylinux: ${{ matrix.manylinux }}
-          args: --release --out dist -i python3.12
+          args: --release --out dist -i python${{ matrix.python-version }}
 
       # Upload wheel artifact
       - name: Set artifact name
         id: artifact-name
         run: |
           if [ -n "${{ matrix.manylinux }}" ]; then
-            echo "name=wheels-${{ matrix.target }}-${{ matrix.manylinux }}" >> $GITHUB_OUTPUT
+            echo "name=wheels-py${{ matrix.python-version }}-${{ matrix.target }}-${{ matrix.manylinux }}" >> $GITHUB_OUTPUT
           else
-            echo "name=wheels-${{ matrix.target }}" >> $GITHUB_OUTPUT
+            echo "name=wheels-py${{ matrix.python-version }}-${{ matrix.target }}" >> $GITHUB_OUTPUT
           fi
       - name: Upload wheel
         uses: actions/upload-artifact@v4
