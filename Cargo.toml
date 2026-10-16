@@ -9,4 +9,9 @@ crate-type = ["cdylib"]
 
 [dependencies]
 telegraf = "0.6.0"
-pyo3 = { version = "0.21", features = ["extension-module"] }
+pyo3 = { version = "0.30", features = ["extension-module"] }
+
+# ponytail: rustc < 1.98 strips release Mach-O with a 4-byte-aligned LINKEDIT
+# string pool; macOS 27 dyld refuses to load it. Drop when rustc >= 1.98.
+[profile.release]
+strip = "none"

@@ -100,11 +100,11 @@ impl PyClient {
     }
 
     fn write_points(&mut self, points: &Bound<'_, PyAny>) -> PyResult<()> {
-        let points_list = points.downcast::<PyList>()
+        let points_list = points.cast::<PyList>()
             .map_err(|_| TelegrafBindingError::new_err("Expected a list of Point objects"))?;
-        
+
         for point in points_list.iter() {
-            let py_point = point.downcast::<PyPoint>()
+            let py_point = point.cast::<PyPoint>()
                 .map_err(|_| TelegrafBindingError::new_err("All items in the list must be Point objects"))?;
             self.write_point(&py_point)
                 .map_err(|e| TelegrafBindingError::new_err(e.to_string()))?;
@@ -122,12 +122,12 @@ impl PyClient {
 }
 
 #[pymodule]
-fn telegraf_client(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
+fn telegraf_client(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyPoint>()?;
     m.add_class::<PyClient>()?;
     m.add(
         "TelegrafBindingError",
-        _py.get_type_bound::<TelegrafBindingError>(),
+        m.py().get_type::<TelegrafBindingError>(),
     )?;
     Ok(())
 }
