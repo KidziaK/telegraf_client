@@ -36,10 +36,10 @@ jobs:
       run: uv sync
     
     - name: Install maturin
-      run: uv run pip install maturin
+      run: uv pip install maturin
     
     - name: Install pytest
-      run: uv run pip install pytest
+      run: uv pip install pytest
     
     - name: Build wheel
       run: uv run maturin build --release
@@ -55,7 +55,7 @@ jobs:
           exit 1
         fi
         echo "Installing wheel: $WHEEL_FILE"
-        uv run pip install "$WHEEL_FILE"
+        uv pip install --reinstall "$WHEEL_FILE"
     
     - name: Run tests
       run: |
